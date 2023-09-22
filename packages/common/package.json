@@ -12,6 +12,7 @@
         "src"
     ],
     "scripts": {
+        "start:dev": "tsc --watch",
         "build": "tsc"
     },
     "keywords": [],

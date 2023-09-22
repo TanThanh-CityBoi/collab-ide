@@ -12,6 +12,7 @@
         "src"
     ],
     "scripts": {
+        "start:dev": "tsc --watch",
         "build": "tsc"
     },
     "keywords": [],
@@ -23,6 +24,7 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
+        "@micro/common": "1.0.0",
         "lodash": "^4.17.21"
     }
 }
