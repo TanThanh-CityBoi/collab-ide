@@ -5,9 +5,10 @@
         "node": "18.16.1"
     },
     "scripts": {
-        "start": "lerna run --parallel --stream start:dev",
-        "start:api": "lerna run start:dev --scope api-gateway --stream",
-        "build": "lerna run --parallel --stream build",
+        "start:all": "lerna run --parallel --stream start:dev",
+        "build:all": "lerna run --parallel --stream build",
+        "start:api-gw": "lerna run start:dev --scope api-gateway --stream",
+        "start:usr-sv": "lerna run start:dev --scope user-service --stream",
         "migration:run": "lerna run migration:run",
         "migration:revert": "lerna run migration:revert",
         "postinstall": "husky install",
@@ -33,8 +34,8 @@
         "pretty-quick": "^3.1.3"
     },
     "workspaces": [
-        "packages/*",
-        "apps/*"
+        "apps/*",
+        "packages/*"
     ],
     "packageManager": "yarn@1.22.19",
     "dependencies": {}

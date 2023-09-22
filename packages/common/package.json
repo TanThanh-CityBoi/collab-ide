@@ -13,6 +13,7 @@
     ],
     "scripts": {
         "start:dev": "tsc --watch",
+        "prebuild": "yarn",
         "build": "tsc"
     },
     "keywords": [],
