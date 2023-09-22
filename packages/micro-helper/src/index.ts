@@ -1,4 +1,4 @@
-import { ClientService } from "./client.service";
+import { Transporter } from "./transporter";
 
 type ObjectType<T> = { new (): T } | Function;
 type EntityTarget<Entity> =
@@ -12,8 +12,8 @@ export function _microTcp<Entity>([
     service,
     entityName,
     _,
-]: IService<Entity>): ClientService<Entity> {
+]: IService<Entity>): Transporter<Entity> {
     const host = process.env[`${service}_SERVICE_HOST`];
     const port = Number(process.env[`${service}_SERVICE_PORT`]);
-    return new ClientService({ host, port }, entityName);
+    return new Transporter({ host, port }, entityName);
 }

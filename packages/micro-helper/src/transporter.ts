@@ -2,21 +2,25 @@ import { ClientTCP } from "@nestjs/microservices";
 import { isObject, isArray } from "lodash";
 // import { RequestContext } from "nestjs-request-context";
 
-import { generateRequestId } from "./function";
-import { ACTION, GENERAL_MESSAGE_PATTERN } from "./constant";
-import { FindConditions, FindOneOptions } from "./find-options";
 import {
+    generateRequestId,
+    GENERAL_ACTIONS,
+    GENERAL_MESSAGE_PATTERN,
+} from "./utils";
+import {
+    FindConditions,
+    FindOneOptions,
     QueryDeepPartialEntity,
     MessParser,
     DeepPartial,
-} from "./query-builder";
+} from "./interfaces";
 
 interface IResponsePaging {
     count: number;
     items: Array<any>;
 }
 
-export class ClientService<Entity> {
+export class Transporter<Entity> {
     private service: ClientTCP;
     private entityStr: string;
     private requestInfo: any;
@@ -61,7 +65,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.GET_BY_IDS,
+            action: GENERAL_ACTIONS.GET_BY_IDS,
             entity: this.entityStr,
             payload: ids,
         };
@@ -77,7 +81,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.GET_ONE,
+            action: GENERAL_ACTIONS.GET_ONE,
             entity: this.entityStr,
             payload: conditions,
         };
@@ -93,7 +97,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.GET_LIST,
+            action: GENERAL_ACTIONS.GET_LIST,
             entity: this.entityStr,
             payload: conditions,
         };
@@ -109,7 +113,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.GET_PAGING,
+            action: GENERAL_ACTIONS.GET_PAGING,
             entity: this.entityStr,
             payload: conditions,
         };
@@ -125,7 +129,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.STORE,
+            action: GENERAL_ACTIONS.STORE,
             entity: this.entityStr,
             payload: conditions,
         };
@@ -141,7 +145,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.STORE_ARRAY,
+            action: GENERAL_ACTIONS.STORE_ARRAY,
             entity: this.entityStr,
             payload: conditions,
         };
@@ -158,7 +162,7 @@ export class ClientService<Entity> {
         const reqData = {
             SEND_SERVICE_TYPE: "GENERAL",
             requestInfo: this.requestInfo,
-            action: ACTION.UPDATE,
+            action: GENERAL_ACTIONS.UPDATE,
             entity: this.entityStr,
             payload,
         };

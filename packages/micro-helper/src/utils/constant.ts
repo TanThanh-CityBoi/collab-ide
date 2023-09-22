@@ -1,6 +1,6 @@
 export const GENERAL_MESSAGE_PATTERN = "general-message-pattern";
 
-export const ACTION = {
+export const GENERAL_ACTIONS = {
     GET_ONE: "GET_ONE",
     GET_BY_ID: "GET_BY_ID",
     //
