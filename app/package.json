@@ -2,6 +2,9 @@
   "name": "collab-ide",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.16.0"
+  },
   "dependencies": {
     "@convergencelabs/monaco-collab-ext": "github:ltk84/monaco-collab-ext-js",
     "@emotion/react": "^11.10.5",
