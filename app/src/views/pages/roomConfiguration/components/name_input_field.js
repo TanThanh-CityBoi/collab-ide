@@ -78,7 +78,7 @@ function NameInputField({ onPressHandler, error }) {
           onPressHandler(name)
         }}
       >
-        Save
+        Start
       </Button>
       <Button
         sx={{

@@ -28,6 +28,7 @@ import { BASE_BACKEND_URL, GET_COMPILER_LANGUAGE_URL, RUN_COMPILER_URL, SAVE_COD
 import ForumRoundedIcon from '@mui/icons-material/ForumRounded';
 import ErrorDialog from "../../common_components/error_dialog";
 import LeaveRoomDialog from "./components/leave_room_dialog";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const configuration = {
   // Using From https://www.metered.ca/tools/openrelay/
@@ -137,20 +138,20 @@ function CodeScreen({ username }) {
     if (!editorUIRef.current) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      const editorBounds = editorUIRef.current.getBoundingClientRect()
+      const editorBounds = editorUIRef.current?.getBoundingClientRect()
       const lastPosition = communicateBoxPositionRef.current
       const communicateBoxSize = communicateBoxRef.current
       setEditorBounds(editorBounds)
-      const newX = lastPosition.x + communicateBoxSize.clientWidth > editorBounds.right
-        ? editorBounds.right - communicateBoxSize.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
-      const newY = lastPosition.y + communicateBoxSize.clientHeight > editorBounds.bottom
-        ? editorBounds.bottom - communicateBoxSize.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
+      const newX = lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
+        ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
+      const newY = lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
+        ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
       setCommunicateBoxPosition({
         x: newX,
         y: newY
       })
 
-      const newMaxAvatarShow = editorUIRef.current.clientWidth / (AVATAR_BOX_WIDTH + AVATAR_BOX_SPACING) - 2;
+      const newMaxAvatarShow = editorUIRef.current?.clientWidth / (AVATAR_BOX_WIDTH + AVATAR_BOX_SPACING) - 2;
       setMaxAvatarShow(newMaxAvatarShow < 0 ? 0 : newMaxAvatarShow)
     });
 
@@ -163,16 +164,16 @@ function CodeScreen({ username }) {
     if (!communicateBoxRef.current) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      setCommunicateBoxWidth(communicateBoxRef.current.clientWidth)
-      setCommunicateBoxHeight(communicateBoxRef.current.clientHeight)
+      setCommunicateBoxWidth(communicateBoxRef.current?.clientWidth)
+      setCommunicateBoxHeight(communicateBoxRef.current?.clientHeight)
 
-      const editorBounds = editorUIRef.current.getBoundingClientRect()
+      const editorBounds = editorUIRef.current?.getBoundingClientRect()
       const lastPosition = communicateBoxPositionRef.current
       const communicateBoxSize = communicateBoxRef.current
-      const newX = lastPosition.x + communicateBoxSize.clientWidth > editorBounds.right
-        ? editorBounds.right - communicateBoxSize.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
-      const newY = lastPosition.y + communicateBoxSize.clientHeight > editorBounds.bottom
-        ? editorBounds.bottom - communicateBoxSize.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
+      const newX = lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
+        ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
+      const newY = lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
+        ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
       setCommunicateBoxPosition({
         x: newX,
         y: newY
@@ -278,7 +279,7 @@ function CodeScreen({ username }) {
     });
 
     socket.current.on("ROOM:DISCONNECT", (userId) => {
-      const users = usersRef.current.filter((item) => item.id !== userId);
+      const users = usersRef.current.filter((item) => item?.id !== userId);
       setUsers(users);
       removeUserCursor(userId);
       usersRef.current = users;
@@ -310,8 +311,8 @@ function CodeScreen({ username }) {
 
     socket.current.on('LOAD_ROOM_MESSAGES', roomMessages => {
       roomMessages = roomMessages.map((e, index) => {
-        const userId = usersRef.current.find(item => item.username === e.username).id
-        const messageDateTime = e.date
+        const userId = usersRef.current.find(item => item.username === e.username)?.id
+        const messageDateTime = new Date(e.date)
         const messageEntity = {
           position: 'left',
           type: "text",
@@ -324,12 +325,12 @@ function CodeScreen({ username }) {
         if (messageDateTime < now) {
           messageEntity.dateString = _createDateFormat(messageDateTime)
         } else {
-          messageDateTime.date = messageDateTime
+          messageEntity.date = messageDateTime
         }
 
         return messageEntity
       })
-
+        
       setMessageList(roomMessages)
     })
 
@@ -416,12 +417,12 @@ function CodeScreen({ username }) {
       var speechEvent = hark(localStream.current, {})
 
       speechEvent.on('speaking', () => {
-        setSpeakingUsers(old => [...old, socket.current.id])
+        setSpeakingUsers(old => [...old, socket.current?.id])
         socket.current.emit('LISTEN_TO_SPEAKER', { roomId, isSpeaking: true })
       })
 
       speechEvent.on('stopped_speaking', () => {
-        setSpeakingUsers(speakingUsers.filter(id => id !== socket.current.id))
+        setSpeakingUsers(speakingUsers.filter(id => id !== socket.current?.id))
         socket.current.emit('LISTEN_TO_SPEAKER', { roomId, isSpeaking: false })
       })
 
@@ -429,9 +430,9 @@ function CodeScreen({ username }) {
       socket.current.on('ALL_USERS', (users) => {
         const temptPeers = []
         users.forEach(user => {
-          const peer = createPeer(user.id, socket.current.id, localStream.current)
+          const peer = createPeer(user.id, socket.current?.id, localStream.current)
           peersRef.current.push({
-            peerId: user.id,
+            peerId: user?.id,
             peer,
             micState: user.micState,
             camState: user.camState,
@@ -841,7 +842,7 @@ function CodeScreen({ username }) {
   }
 
   function _createDateFormat(dateTime) {
-    var time = ''
+    let time = ''
     const isAfternoon = dateTime.getHours() > 12 ? true : false
     if (isAfternoon) {
       time = `${dateTime.getHours() - 12}:${dateTime.getMinutes()} PM`
@@ -890,11 +891,7 @@ function CodeScreen({ username }) {
               }}
               className="icon right"
             >
-              <img
-                src="http://clipground.com/images/copy-4.png"
-                title="Click to Copy"
-                alt="Copy room id"
-              />
+              <ContentCopyIcon titleAccess="Click to copy" fontSize="small" />
             </span>
           </h3>
           <h3>
@@ -1113,7 +1110,7 @@ function CodeScreen({ username }) {
   function setDefaultCallingBarPosition() {
     setCommunicateBoxPosition({
       x: EDITOR_BOUND_PADDING,
-      y: (editorUIRef.current.getBoundingClientRect().bottom - communicateBoxRef.current.clientHeight - EDITOR_BOUND_PADDING) ?? EDITOR_BOUND_PADDING
+      y: (editorUIRef.current?.getBoundingClientRect().bottom - communicateBoxRef.current?.clientHeight - EDITOR_BOUND_PADDING) ?? EDITOR_BOUND_PADDING
     })
   }
 

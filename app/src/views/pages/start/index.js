@@ -6,7 +6,7 @@ import CodeRoundedIcon from '@mui/icons-material/CodeRounded';
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
 import Carousel from "nuka-carousel";
 import VideoChatRoundedIcon from '@mui/icons-material/VideoChatRounded';
-import logo from '../../../assets/collab-coding-2.png';
+import logo from '../../../assets/collab-icon.png';
 import { KeyboardArrowLeftRounded, KeyboardArrowRightRounded } from "@mui/icons-material";
 
 
