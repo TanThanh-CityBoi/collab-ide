@@ -7,7 +7,6 @@ import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
 import Carousel from "nuka-carousel";
 import VideoChatRoundedIcon from '@mui/icons-material/VideoChatRounded';
 import logo from '../../../assets/collab-coding-2.png';
-import { ReactComponent as GithubLogo } from '../../../assets/github-logo.svg';
 import { KeyboardArrowLeftRounded, KeyboardArrowRightRounded } from "@mui/icons-material";
 
 
@@ -114,17 +113,6 @@ function StartScreen() {
           color: "#fff",
         }}
         item md={5}>
-          
-          <IconButton sx={{
-            margin: "8px",
-          }} onClick={() => {
-            window.open("https://github.com/hacThe/Collaborative-IDE-socket/", '_blank');
-          }}>
-            <GithubLogo style={{
-              width: "36px",
-              height: "36px",
-            }}/>
-          </IconButton>
         <Box sx={{
           display: "flex",
           flexDirection: "column",
@@ -138,14 +126,12 @@ function StartScreen() {
             width: "20%",
             marginBottom: "18px",
           }}/>
-          <p style={{ width: "130px", textAlign: "center", lineHeight: "1.6" }}>
-            Welcome to <strong>Col-E</strong>
-          </p>
           <Button
             sx={{
               marginTop: "18px",
               minWidth: "200px",
               fontFamily: "Roboto Mono",
+              backgroundColor: "#d800ff"
             }}
             variant="contained"
             onClick={() => {
@@ -161,7 +147,7 @@ function StartScreen() {
               marginTop: "12px",
               minWidth: "200px",
               fontFamily: "Roboto Mono",
-              color: "#1976d2",
+              color: "#d800ff",
               backgroundColor: "#ffffff",
             }}
             variant="outlined"

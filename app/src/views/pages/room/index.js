@@ -21,13 +21,13 @@ import MainAvatarBox from "../../common_components/mainAvatarBox";
 import BasicTabs from "./components/tabBar";
 import "react-chat-elements/dist/main.css"
 import { MessageList, Input } from 'react-chat-elements/build/index';
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import SendIcon from '@mui/icons-material/Send';
 import hark from "hark"
 import scrollMessageListToBottom from "./utility";
 import { BASE_BACKEND_URL, GET_COMPILER_LANGUAGE_URL, RUN_COMPILER_URL, SAVE_CODE_URL } from "../../../constants";
-import UserPalette from "./components/palette";
 import ForumRoundedIcon from '@mui/icons-material/ForumRounded';
 import ErrorDialog from "../../common_components/error_dialog";
+import LeaveRoomDialog from "./components/leave_room_dialog";
 
 const configuration = {
   // Using From https://www.metered.ca/tools/openrelay/
@@ -129,6 +129,8 @@ function CodeScreen({ username }) {
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false)
   const newLanguageValueRef = useRef(null)
   const [isShowDialog, setShowDialog] = useState(false)
+
+  const [isShowLeaveDialog, setShowLeaveDialog] = useState(false)
   const errorMessageRef = useRef(null)
 
   useEffect(() => {
@@ -277,7 +279,6 @@ function CodeScreen({ username }) {
 
     socket.current.on("ROOM:DISCONNECT", (userId) => {
       const users = usersRef.current.filter((item) => item.id !== userId);
-      console.log("🚀 ~ file: index.js:280 ~ socket.current.on ~ users:", users)
       setUsers(users);
       removeUserCursor(userId);
       usersRef.current = users;
@@ -568,6 +569,10 @@ function CodeScreen({ username }) {
 
     peer.on('track', (track, stream) => {
       console.log(track)
+    })
+
+    peer.on('error', (error, stream) => {
+      console.log('errorrr:::', error)
     })
 
 
@@ -930,16 +935,7 @@ function CodeScreen({ username }) {
           )}
         />
 
-        {/* <Box sx={{ marginTop: "12px" }}>
-    <Button
-      variant="contained"
-      fullWidth={true}
-      size="small"
-      onClick={handleRunCompiler}>
-      Save compiler language
-    </Button>
-  </Box> */}
-        <Box sx={{ marginTop: "12px" }}>
+        <Box sx={{ marginTop: "30px" }}>
           <Button
             sx={{
               fontFamily: "Roboto Mono",
@@ -959,10 +955,6 @@ function CodeScreen({ username }) {
             marginTop: "36px",
           }}
         >
-          {/* <Box sx={{ flex: 1 }}>
-      <h4>Input</h4>
-      <textarea></textarea>
-    </Box> */}
 
           <Box sx={{ flex: 1 }}>
             <h3>Output</h3>
@@ -976,48 +968,70 @@ function CodeScreen({ username }) {
             </Box>
           </Box>
         </Box>
-      </Box>
-    </>
-  }
 
-  const settingTab = () => {
-    return (
-      <Box sx={{ marginTop: "16px", marginLeft: "18px", }}>
-        <h3>Change your color:</h3>
-        <Box sx={{ minHeight: "50px", maxHeight: "26vh", padding: "4px 0px 8px 0px", overflow: "visible" }}>
-          <UserPalette
-            userToColor={userColors}
-            userId={socket.current?.id}
-            onChange={(color) => {
-              let newUserColors = userColorsRef.current
-              newUserColors[socket.current?.id] = color
-              setUserColors(state => ({
-                ...state,
-                ...newUserColors
-              }))
-              userColorsRef.current = newUserColors
-              socket.current?.emit('COLOR_CHANGED', { userId: socket.current?.id, color: color })
-            }} />
-        </Box>
-        <Box sx={{ marginTop: "12px", marginRight: "18px" }}>
+        <Box sx={{ marginTop: "30px" }}>
           <Button
             sx={{
               fontFamily: "Roboto Mono",
             }}
-            variant="contained"
+            variant="outlined"
             color="error"
             fullWidth={true}
-            onClick={() => {
-              socket.current.disconnect()
-              navigate(`/`, { replace: true })
-            }}
+            onClick={() => setShowLeaveDialog(true)}
           >
             Leave room
           </Button>
+
+          <LeaveRoomDialog 
+            open={isShowLeaveDialog} 
+            handleClose={() => setShowLeaveDialog(false)} 
+            handleConfirm={()=> { 
+              socket.current.disconnect()
+              navigate(`/`, { replace: true })}} 
+          />
         </Box>
       </Box>
-    )
+    </>
   }
+
+  // const settingTab = () => {
+  //   return (
+  //     <Box sx={{ marginTop: "16px", marginLeft: "18px", }}>
+  //       <h3>Change your color:</h3>
+  //       <Box sx={{ minHeight: "50px", maxHeight: "26vh", padding: "4px 0px 8px 0px", overflow: "visible" }}>
+  //         <UserPalette
+  //           userToColor={userColors}
+  //           userId={socket.current?.id}
+  //           onChange={(color) => {
+  //             let newUserColors = userColorsRef?.current
+  //             newUserColors[socket.current?.id] = color
+  //             setUserColors(state => ({
+  //               ...state,
+  //               ...newUserColors
+  //             }))
+  //             userColorsRef.current = newUserColors
+  //             socket.current?.emit('COLOR_CHANGED', { userId: socket.current?.id, color: color })
+  //           }} />
+  //       </Box>
+  //       <Box sx={{ marginTop: "12px", marginRight: "18px" }}>
+  //         <Button
+  //           sx={{
+  //             fontFamily: "Roboto Mono",
+  //           }}
+  //           variant="contained"
+  //           color="error"
+  //           fullWidth={true}
+  //           onClick={() => {
+  //             socket.current.disconnect()
+  //             navigate(`/`, { replace: true })
+  //           }}
+  //         >
+  //           Leave room
+  //         </Button>
+  //       </Box>
+  //     </Box>
+  //   )
+  // }
 
   const messageTab = () => {
     return (
@@ -1074,11 +1088,11 @@ function CodeScreen({ username }) {
             </Grid>
             <Grid item xs={2}>
               <Button
-                style={{ backgroundColor: '#1976d2', width: '100%', height: '100%', color: 'white', borderRadius: '5px', minWidth: 'unset' }}
+                style={{ backgroundColor: '#d800ff', width: '100%', height: '100%', color: 'white', borderRadius: '5px', minWidth: 'unset' }}
                 onClick={() => {
                   sendChatMessage()
                 }}>
-                <SendRoundedIcon fontSize="small" />
+                <SendIcon fontSize="small" />
               </Button>
             </Grid>
           </Grid>
@@ -1256,7 +1270,6 @@ function CodeScreen({ username }) {
             value={initialCode}
             defaultLanguage="undefined"
             language={editorLanguage}
-            // defaultValue={languageTemplate}
             onChange={handleOnchange}
             onMount={handleOnMount}
             theme="vs-dark"
@@ -1277,8 +1290,8 @@ function CodeScreen({ username }) {
               overflow: "auto",
             }}
           >
-            <BasicTabs tabIndexRef={tabIndexRef} labels={['Info', 'Message', 'Setting']} components={[
-              infoTab(), messageTab(), settingTab(),
+            <BasicTabs tabIndexRef={tabIndexRef} labels={['Info', 'Message'/* , 'Setting' */]} components={[
+              infoTab(), messageTab(), /* settingTab(), */
             ]} dotState={isDotInvisible} setDotState={setDotInvisible} />
 
           </Box>

@@ -163,7 +163,7 @@ function InputNameScreen() {
             return
         }
 
-        sessionStorage.setItem('username', username)
+        localStorage.setItem('username', username)
         dispatch(setAuthState(true))
         location.state?.isCreateRoom ?? false ? createRoom() : joinRoom(username)
     }

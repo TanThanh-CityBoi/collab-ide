@@ -3,7 +3,7 @@ import {
   Button
 } from "@mui/material";
 import React, { useState } from "react";
-import { TextField, Typography } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setUserName } from "../../../../redux/slices/app-slice";
 import { useNavigate } from "react-router-dom";
@@ -91,7 +91,7 @@ function NameInputField({ onPressHandler, error }) {
           marginTop: "14px",
           width: '30%',
         }}
-        variant="contained"
+        variant="outlined"
         color="error"
         fullWidth={true}
         onClick={() => {

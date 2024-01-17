@@ -60,15 +60,15 @@ export default function BasicTabs({ tabIndexRef, components, labels, dotState, s
     return (
         <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: '#2e2e2e' }}>
-                <Tabs value={tabIndex} color={'rgb(247, 235, 3)'} onChange={handleChange} aria-label="basic tabs example" centered TabIndicatorProps={{
+                <Tabs value={tabIndex} color={'#fff'} onChange={handleChange} aria-label="basic tabs example" centered TabIndicatorProps={{
                     style: {
-                        backgroundColor: "rgb(247, 235, 3)"
+                        backgroundColor: "#fff"
                     }
                 }}>
                     {labels.map((item, index) => {
                         var icon = index === 1 ? <Badge invisible={dotState} variant='dot' color='info'> {icons[index]} </Badge> : icons[index]
 
-                        return <Tab sx={{ width: '33%' }} icon={icon} key={index} {...a11yProps(index)} />
+                        return <Tab sx={{ width: '50%' }} icon={icon} key={index} {...a11yProps(index)} />
                     })}
                 </Tabs>
             </Box>

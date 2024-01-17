@@ -48,7 +48,7 @@ function SelectRoomDialog({ open, handleClose }) {
           </Button>
 
           <Button
-            sx={{ color: "white", fontFamily: "Roboto Mono" }}
+            sx={{ color: "#FFF", fontFamily: "Roboto Mono", padding: "5px 25px" }}
             variant="contained"
             disabled={!roomId}
             onClick={() => {

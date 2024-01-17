@@ -60,15 +60,19 @@ input {
 }
 
 div:has(> .input-name) {
-  border-bottom: 1px solid rgba(256, 256, 256, 0.42)
+  border-bottom: 1px solid #c4c4c4
 }
 
 div:has(> .input-name):hover {
-  border-bottom: 2px solid rgba(256, 256, 256, 0.42)
+  border-bottom: 1px solid #fff
+}
+
+div:has(> .input-name).MuiInput-root::after{
+  border-bottom: 1px solid #f2a9ff !important
 }
 
 div:has(> .input-name).Mui-focused {
-  border-bottom: 0px solid #1976d2
+  border-bottom: 0px !important;
 }
 
 div:has(> .input-name).Mui-error {
@@ -177,7 +181,7 @@ svg {
 }
 
 .rce-mbox.rce-mbox-right {
-  background: #1976d2 !important;
+  background: #740088 !important;
   color: white;
 }
 
@@ -215,8 +219,19 @@ svg {
 }
 
 button.Mui-disabled {
-  color: rgba(256,256, 256, 0.26) !important;
-  background-color: rgba(0, 0, 0, 0.12) !important;
+  opacity: 0.5;
+}
+
+button.MuiButton-containedPrimary {
+  background-color: #d800ff !important;
+}
+
+button.MuiButton-containedPrimary:hover {
+  background-color: #e980fc !important;
+}
+
+button.MuiButton-outlinedPrimary:hover {
+  border: solid 1px #FFF !important;
 }
 
 .cancel-button {
