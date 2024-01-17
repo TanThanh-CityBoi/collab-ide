@@ -3,7 +3,7 @@ var router = express.Router();
 const { redisClient } = require('../database/redis_client')
 const moment = require('moment')
 const { greenBright, redBright } = require('chalk')
-const { v4 } = require('uuid')
+const { nanoid } = require('nanoid')
 const { PLClient } = require('../database/programming_language_client')
 
 const plClient = new PLClient()
@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
 
 /* POST create room with user */
 router.post('/create-room-with-user', async (req, res) => {
-  const roomId = v4()
+  const roomId = nanoid()
 
   const defaultLanguage = new PLClient().findLanguage('Java')
   const defaultLanguageVersionIndex = new PLClient().findVersionIndex(defaultLanguage, defaultLanguage.versions[0].name)

@@ -1,15 +1,15 @@
 const { Version, ProgrammingLanguage } = require('../models/programming_language')
 
 const copyRight = `/*
-* Copyright (c) UIT KTPM2019
-* All rights reserved.
+* Collaborative online editor
+* Write, Edit and Run code with your team.
 */
 
 `;
 
 const copyRightForPython = `"""
- Copyright (c) UIT KTPM2019
- All rights reserved.
+ Collaborative online editor
+ Write, Edit and Run code with your team.
 """
 
 `
