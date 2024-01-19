@@ -76,25 +76,25 @@ function CodeScreen({ username }) {
 
   const usersRef = useRef([]);
   const { roomId } = useParams();
-  const [initialCode, setInitialCode] = useState("");
-  const code = useRef("")
+  const [initialCode, setInitialCode] = useState("java");
+  const code = useRef("");
   const [output, setOutput] = useState("");
   const [users, setUsers] = useState([]);
-  const [compileState, setCompileState] = useState(false)
+  const [compileState, setCompileState] = useState(false);
 
-  const compilerLanguages = useRef([])
+  const compilerLanguages = useRef([]);
   const [languageList, setLanguageList] = useState([]);
-  const versionList = useRef([])
+  const versionList = useRef([]);
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
   const [selectedVersionIndex, setSelectedVersionIndex] = useState(0);
   const [editorLanguage, setEditorLanguage] = useState(null);
-  const peersRef = useRef([])
-  const [peers, setPeers] = useState([])
-  const userVideo = useRef(null)
-  const [peerStreams, setPeerStreams] = useState([])
-  const peerStreamsRef = useRef([])
-  const localStream = useRef(null)
-  const [speakingUsers, setSpeakingUsers] = useState([])
+  const peersRef = useRef([]);
+  const [peers, setPeers] = useState([]);
+  const userVideo = useRef(null);
+  const [peerStreams, setPeerStreams] = useState([]);
+  const peerStreamsRef = useRef([]);
+  const localStream = useRef(null);
+  const [speakingUsers, setSpeakingUsers] = useState([]);
 
   const AVATAR_BOX_WIDTH = 200;
   const AVATAR_BOX_HEIGHT = 150;
@@ -103,105 +103,114 @@ function CodeScreen({ username }) {
   const [maxAvatarShow, setMaxAvatarShow] = useState(3);
 
   const editorUIRef = useRef(null);
-  const [editorBounds, setEditorBounds] = useState(null)
+  const [editorBounds, setEditorBounds] = useState(null);
 
-  const communicateBoxRef = useRef(null)
-  const [communicateBoxWidth, setCommunicateBoxWidth] = useState(null)
-  const [communicateBoxHeight, setCommunicateBoxHeight] = useState(null)
+  const communicateBoxRef = useRef(null);
+  const [communicateBoxWidth, setCommunicateBoxWidth] = useState(null);
+  const [communicateBoxHeight, setCommunicateBoxHeight] = useState(null);
 
-  const communicateBoxPositionRef = useRef({ x: 0, y: 0 })
-  const [communicateBoxPosition, setCommunicateBoxPosition] = useState({ x: 0, y: 0 })
+  const communicateBoxPositionRef = useRef({ x: 0, y: 0 });
+  const [communicateBoxPosition, setCommunicateBoxPosition] = useState({ x: 0, y: 0 });
 
-  const [expandVoiceTab, setExpandVoiceTab] = useState(true)
-  const [micState, setMicState] = useState(true)
-  const [camState, setCamState] = useState(true)
-  const inputRef = useRef(null)
+  const [expandVoiceTab, setExpandVoiceTab] = useState(true);
+  const [micState, setMicState] = useState(true);
+  const [camState, setCamState] = useState(true);
+  const inputRef = useRef(null);
 
-  const [userColors, setUserColors] = useState({})
-  const userColorsRef = useRef({})
+  const [userColors, setUserColors] = useState({});
+  const userColorsRef = useRef({});
 
-  const [messageList, setMessageList] = useState([])
-  const [isDotInvisible, setDotInvisible] = useState(true)
-  const tabIndexRef = useRef(0)
+  const [messageList, setMessageList] = useState([]);
+  const [isDotInvisible, setDotInvisible] = useState(true);
+  const tabIndexRef = useRef(0);
 
-  const someOneChangeCode = useRef(false)
-  const location = useLocation()
+  const someOneChangeCode = useRef(false);
+  const location = useLocation();
 
-  const [openTemplateDialog, setOpenTemplateDialog] = useState(false)
-  const newLanguageValueRef = useRef(null)
-  const [isShowDialog, setShowDialog] = useState(false)
+  const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
+  const newLanguageValueRef = useRef(null);
+  const [isShowDialog, setShowDialog] = useState(false);
 
-  const [isShowLeaveDialog, setShowLeaveDialog] = useState(false)
-  const errorMessageRef = useRef(null)
-
-  useEffect(() => {
-    if (!editorUIRef.current) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      const editorBounds = editorUIRef.current?.getBoundingClientRect()
-      const lastPosition = communicateBoxPositionRef.current
-      const communicateBoxSize = communicateBoxRef.current
-      setEditorBounds(editorBounds)
-      const newX = lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
-        ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
-      const newY = lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
-        ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
-      setCommunicateBoxPosition({
-        x: newX,
-        y: newY
-      })
-
-      const newMaxAvatarShow = editorUIRef.current?.clientWidth / (AVATAR_BOX_WIDTH + AVATAR_BOX_SPACING) - 2;
-      setMaxAvatarShow(newMaxAvatarShow < 0 ? 0 : newMaxAvatarShow)
-    });
-
-    resizeObserver.observe(editorUIRef.current);
-
-    return () => resizeObserver.disconnect();
-  }, [])
+  const [isShowLeaveDialog, setShowLeaveDialog] = useState(false);
+  const errorMessageRef = useRef(null);
 
   useEffect(() => {
-    if (!communicateBoxRef.current) return;
+     if (!editorUIRef.current) return;
 
-    const resizeObserver = new ResizeObserver(() => {
-      setCommunicateBoxWidth(communicateBoxRef.current?.clientWidth)
-      setCommunicateBoxHeight(communicateBoxRef.current?.clientHeight)
+     const resizeObserver = new ResizeObserver(() => {
+        const editorBounds = editorUIRef.current?.getBoundingClientRect();
+        const lastPosition = communicateBoxPositionRef.current;
+        const communicateBoxSize = communicateBoxRef.current;
+        setEditorBounds(editorBounds);
+        const newX =
+           lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
+              ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING
+              : lastPosition.x;
+        const newY =
+           lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
+              ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING
+              : lastPosition.y;
+        setCommunicateBoxPosition({
+           x: newX,
+           y: newY,
+        });
 
-      const editorBounds = editorUIRef.current?.getBoundingClientRect()
-      const lastPosition = communicateBoxPositionRef.current
-      const communicateBoxSize = communicateBoxRef.current
-      const newX = lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
-        ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING : lastPosition.x
-      const newY = lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
-        ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING : lastPosition.y;
-      setCommunicateBoxPosition({
-        x: newX,
-        y: newY
-      })
-    });
+        const newMaxAvatarShow =
+           editorUIRef.current?.clientWidth / (AVATAR_BOX_WIDTH + AVATAR_BOX_SPACING) - 2;
+        setMaxAvatarShow(newMaxAvatarShow < 0 ? 0 : newMaxAvatarShow);
+     });
 
-    resizeObserver.observe(communicateBoxRef.current);
+     resizeObserver.observe(editorUIRef.current);
 
-    return () => resizeObserver.disconnect();
-  }, [])
+     return () => resizeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
-    axios
-      .get(GET_COMPILER_LANGUAGE_URL)
-      .then((response) => {
-        const fetchCompilerLanguages = response.data.result;
-        compilerLanguages.current = fetchCompilerLanguages
-        setLanguageList(fetchCompilerLanguages.map((item) => item.name));
-        versionList.current = fetchCompilerLanguages[selectedLanguageIndex].versions
-        // setLanguageTemplate(fetchCompilerLanguages[selectedLanguageIndex].template)
-        code.current = fetchCompilerLanguages[selectedLanguageIndex].template
-        setInitialCode(fetchCompilerLanguages[selectedLanguageIndex].template)
-      })
-      .catch((error) => {
-        console.log(`Error when get compiler languages\n ${error}`);
-        // TODO: handle error
-      });
-  }, [])
+     if (!communicateBoxRef.current) return;
+
+     const resizeObserver = new ResizeObserver(() => {
+        setCommunicateBoxWidth(communicateBoxRef.current?.clientWidth);
+        setCommunicateBoxHeight(communicateBoxRef.current?.clientHeight);
+
+        const editorBounds = editorUIRef.current?.getBoundingClientRect();
+        const lastPosition = communicateBoxPositionRef.current;
+        const communicateBoxSize = communicateBoxRef.current;
+        const newX =
+           lastPosition.x + communicateBoxSize?.clientWidth > editorBounds?.right
+              ? editorBounds?.right - communicateBoxSize?.clientWidth - EDITOR_BOUND_PADDING
+              : lastPosition.x;
+        const newY =
+           lastPosition.y + communicateBoxSize?.clientHeight > editorBounds?.bottom
+              ? editorBounds?.bottom - communicateBoxSize?.clientHeight - EDITOR_BOUND_PADDING
+              : lastPosition.y;
+        setCommunicateBoxPosition({
+           x: newX,
+           y: newY,
+        });
+     });
+
+     resizeObserver.observe(communicateBoxRef.current);
+
+     return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+     axios
+        .get(GET_COMPILER_LANGUAGE_URL)
+        .then((response) => {
+           const fetchCompilerLanguages = response.data.result;
+           compilerLanguages.current = fetchCompilerLanguages;
+           setLanguageList(fetchCompilerLanguages.map((item) => item.name));
+           versionList.current = fetchCompilerLanguages[selectedLanguageIndex]?.versions;
+           // setLanguageTemplate(fetchCompilerLanguages[selectedLanguageIndex].template)
+           code.current = fetchCompilerLanguages[selectedLanguageIndex]?.template;
+           setInitialCode(fetchCompilerLanguages[selectedLanguageIndex]?.template);
+        })
+        .catch((error) => {
+           console.log(`Error when get compiler languages\n ${error}`);
+           // TODO: handle error
+        });
+  }, []);
 
   useEffect(() => {
      socket.current = io(BASE_BACKEND_URL, {
