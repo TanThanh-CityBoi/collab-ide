@@ -17,11 +17,10 @@ var saveCodeRouter = require('./routes/save-data')
 var app = express();
 const server = http.createServer(app)
 const io = new Server(server, {
-    cors: {
-        origin: [FRONT_END_URL, "http://localhost:3000"] 
-        // origin: "http://localhost:3000"
-    }
-})
+   cors: {
+      origin: [FRONT_END_URL, "http://localhost:3000"],
+   },
+});
 
 redisClient.connect()
     .then(() => console.log(greenBright.bold('CONNECTED to redis!')))
