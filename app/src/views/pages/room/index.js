@@ -204,495 +204,478 @@ function CodeScreen({ username }) {
   }, [])
 
   useEffect(() => {
-    socket.current = io(BASE_BACKEND_URL, {
-      transports: ["polling", "websocket"],
-    });
+     socket.current = io(BASE_BACKEND_URL, {
+        transports: ["polling", "websocket"],
+     });
 
-    socket.current.on("CODE_INSERT", (data) => {
-      someOneChangeCode.current = true
-      contentManager.insert(data.index, data.text);
-    });
+     socket.current.on("CODE_INSERT", (data) => {
+        someOneChangeCode.current = true;
+        contentManager.insert(data.index, data.text);
+     });
 
-    socket.current.on("CODE_REPLACE", (data) => {
-      someOneChangeCode.current = true
-      contentManager.replace(data.index, data.length, data.text);
-    });
+     socket.current.on("CODE_REPLACE", (data) => {
+        someOneChangeCode.current = true;
+        contentManager.replace(data.index, data.length, data.text);
+     });
 
-    socket.current.on("CODE_DELETE", (data) => {
-      someOneChangeCode.current = true
-      contentManager.delete(data.index, data.length);
-    });
+     socket.current.on("CODE_DELETE", (data) => {
+        someOneChangeCode.current = true;
+        contentManager.delete(data.index, data.length);
+     });
 
-    socket.current.on("CURSOR_CHANGED", (cursorData) => {
-      remoteCursorManager.setCursorOffset(cursorData.name, cursorData.offset);
-    });
+     socket.current.on("CURSOR_CHANGED", (cursorData) => {
+        remoteCursorManager.setCursorOffset(cursorData.name, cursorData.offset);
+     });
 
-    socket.current.on("SELECTION_CHANGED", (selectionData) => {
-      remoteSelectionManager.setSelectionOffsets(
-        selectionData.name,
-        selectionData.startOffset,
-        selectionData.endOffset
-      );
-    });
+     socket.current.on("SELECTION_CHANGED", (selectionData) => {
+        remoteSelectionManager.setSelectionOffsets(
+           selectionData.name,
+           selectionData.startOffset,
+           selectionData.endOffset
+        );
+     });
 
-    socket.current.on("CODE_CHANGED", (newCode) => {
-      code.current = newCode
-      setInitialCode(newCode)
-      someOneChangeCode.current = true
-    });
+     socket.current.on("CODE_CHANGED", (newCode) => {
+        code.current = newCode;
+        setInitialCode(newCode);
+        someOneChangeCode.current = true;
+     });
 
-    socket.current.on("COLOR_CHANGED", async (data) => {
-      const userToColor = data.userToColor
-      const userId = data.userId
-      setUserColors(userToColor)
-      userColorsRef.current = userToColor
+     socket.current.on("COLOR_CHANGED", async (data) => {
+        const userToColor = data.userToColor;
+        const userId = data.userId;
+        setUserColors(userToColor);
+        userColorsRef.current = userToColor;
 
-      await remoteCursorManager.removeCursor(userId)
-      await remoteSelectionManager.removeSelection(userId)
-      addUserCursor(userId, userToColor[userId])
-    })
+        await remoteCursorManager.removeCursor(userId);
+        await remoteSelectionManager.removeSelection(userId);
+        addUserCursor(userId, userToColor[userId]);
+     });
 
-    socket.current.on("OUTPUT_CHANGED", (output) => {
-      setOutput(output);
-    });
+     socket.current.on("OUTPUT_CHANGED", (output) => {
+        setOutput(output);
+     });
 
-    socket.current.on("connect_error", (err) => {
-      console.log(`connect_error due to ${err.message}`);
-    });
+     socket.current.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+     });
 
-    socket.current.on("connect", () => {
-      // socket.current.emit("CONNECTED_TO_ROOM", { roomId, username });
-    });
+     socket.current.on("connect", () => {
+        // socket.current.emit("CONNECTED_TO_ROOM", { roomId, username });
+     });
 
-    socket.current.on("ROOM:CONNECTION", (data) => {
-      setUsers(data.users);
-      usersRef.current = data.users;
-      setUserColors(data.userColors)
-      userColorsRef.current = data.userColors
+     socket.current.on("ROOM:CONNECTION", (data) => {
+        setUsers(data.users);
+        usersRef.current = data.users;
+        setUserColors(data.userColors);
+        userColorsRef.current = data.userColors;
 
-      if (!isSetInitial) {
-        addInitialCursors(data.userColors)
-        isSetInitial = true
-      } else {
-        addUserCursor(data.newUserId, data.userColors[data.newUserId]);
-      }
-    });
-
-    socket.current.on("ROOM:DISCONNECT", (userId) => {
-      const users = usersRef.current.filter((item) => item?.id !== userId);
-      setUsers(users);
-      removeUserCursor(userId);
-      usersRef.current = users;
-
-      delete userColorsRef.current[userId];
-      setUserColors(userColorsRef.current);
-    });
-
-    socket.current.on('CHANGE_LANGUAGE', (newLanguage) => {
-      const index = compilerLanguages.current.findIndex((item) => item.name === newLanguage);
-      setSelectedLanguageIndex(index);
-      if (index !== selectedLanguageIndex) {
-        setSelectedVersionIndex(0);
-        versionList.current = index !== -1 ? compilerLanguages.current[index].versions : []
-      }
-      changeEditorLanguage(compilerLanguages.current[index].languageCode);
-    })
-
-    socket.current.on('CHANGE_VERSION', (newVersionIndex) => {
-      setSelectedVersionIndex(newVersionIndex);
-    })
-
-    socket.current.on('COMPILE_STATE_CHANGED', (compileState) => setCompileState(compileState))
-
-    socket.current.on('CHAT_MESSAGE', ({ senderName, message, date }) => {
-      addMessage(senderName, message, date, false)
-      tabIndexRef.current === 1 ? setDotInvisible(true) : setDotInvisible(false)
-    })
-
-    socket.current.on('LOAD_ROOM_MESSAGES', roomMessages => {
-      roomMessages = roomMessages.map((e, index) => {
-        const userId = usersRef.current.find(item => item.username === e.username)?.id
-        const messageDateTime = new Date(e.date)
-        const messageEntity = {
-          position: 'left',
-          type: "text",
-          title: e.username,
-          text: e.message,
-          titleColor: userId ? userColorsRef.current[userId] : USER_DEFAULT_COLOR,
-        }
-
-        const now = new Date().setHours(0, 0, 0, 0)
-        if (messageDateTime < now) {
-          messageEntity.dateString = _createDateFormat(messageDateTime)
+        if (!isSetInitial) {
+           addInitialCursors(data.userColors);
+           isSetInitial = true;
         } else {
-          messageEntity.date = messageDateTime
+           addUserCursor(data.newUserId, data.userColors[data.newUserId]);
         }
+     });
 
-        return messageEntity
-      })
-        
-      setMessageList(roomMessages)
-    })
+     socket.current.on("ROOM:DISCONNECT", (userId) => {
+        const users = usersRef.current.filter((item) => item?.id !== userId);
+        setUsers(users);
+        removeUserCursor(userId);
+        usersRef.current = users;
 
-    socket.current.on('LISTEN_TO_SPEAKER', ({ userId, isSpeaking }) => {
-      if (isSpeaking) {
-        setSpeakingUsers(old => [...old, userId])
-      } else {
-        setSpeakingUsers(speakingUsers.filter(id => id !== userId))
-      }
-    })
+        delete userColorsRef.current[userId];
+        setUserColors(userColorsRef.current);
+     });
 
-    socket.current.on('DB_ERROR', (message) => {
-      showErrorDialog(message)
-    })
+     socket.current.on("CHANGE_LANGUAGE", (newLanguage) => {
+        const index = compilerLanguages.current.findIndex((item) => item.name === newLanguage);
+        setSelectedLanguageIndex(index);
+        if (index !== selectedLanguageIndex) {
+           setSelectedVersionIndex(0);
+           versionList.current = index !== -1 ? compilerLanguages.current[index].versions : [];
+        }
+        changeEditorLanguage(compilerLanguages.current[index]?.languageCode);
+     });
 
+     socket.current.on("CHANGE_VERSION", (newVersionIndex) => {
+        setSelectedVersionIndex(newVersionIndex);
+     });
 
-    return () => {
-      socket.current.off("CODE_INSERT");
-      socket.current.off("CODE_REPLACE");
-      socket.current.off("CODE_DELETE");
-      socket.current.off("CURSOR_CHANGED");
-      socket.current.off("SELECTION_CHANGED");
-      socket.current.off("CODE_CHANGED");
-      socket.current.off("COLOR_CHANGED");
-      socket.current.off("OUTPUT_CHANGED");
-      socket.current.off("connect_error");
-      socket.current.off("connect");
-      socket.current.off("ROOM:CONNECTION");
-      socket.current.off("ROOM:DISCONNECT");
-      socket.current.off('CHANGE_LANGUAGE')
-      socket.current.off('CHANGE_VERSION')
-      socket.current.off('COMPILE_STATE_CHANGED')
-      socket.current.off('ALL_USERS')
-      socket.current.off('ROOM:CONNECTION_MEDIA')
-      socket.current.off('RECEIVE_RETURN_SIGNAL')
-      socket.current.off('ROOM:DISCONNECTION_MEDIA')
-      socket.current.off('SOMEONE_TOGGLE_MICROPHONE')
-      socket.current.off('SOMEONE_TOGGLE_CAMERA')
-      socket.current.off('CHAT_MESSAGE')
-      socket.current.off('LOAD_ROOM_MESSAGES')
-      socket.current.off('LISTEN_TO_SPEAKER')
-      socket.current.off('DB_ERROR')
-    };
+     socket.current.on("COMPILE_STATE_CHANGED", (compileState) => setCompileState(compileState));
+
+     socket.current.on("CHAT_MESSAGE", ({ senderName, message, date }) => {
+        addMessage(senderName, message, date, false);
+        tabIndexRef.current === 1 ? setDotInvisible(true) : setDotInvisible(false);
+     });
+
+     socket.current.on("LOAD_ROOM_MESSAGES", (roomMessages) => {
+        roomMessages = roomMessages.map((e, index) => {
+           const userId = usersRef.current.find((item) => item.username === e.username)?.id;
+           const messageDateTime = new Date(e.date);
+           const messageEntity = {
+              position: "left",
+              type: "text",
+              title: e.username,
+              text: e.message,
+              titleColor: userId ? userColorsRef.current[userId] : USER_DEFAULT_COLOR,
+           };
+
+           const now = new Date().setHours(0, 0, 0, 0);
+           if (messageDateTime < now) {
+              messageEntity.dateString = _createDateFormat(messageDateTime);
+           } else {
+              messageEntity.date = messageDateTime;
+           }
+
+           return messageEntity;
+        });
+
+        setMessageList(roomMessages);
+     });
+
+     socket.current.on("LISTEN_TO_SPEAKER", ({ userId, isSpeaking }) => {
+        if (isSpeaking) {
+           setSpeakingUsers((old) => [...old, userId]);
+        } else {
+           setSpeakingUsers(speakingUsers.filter((id) => id !== userId));
+        }
+     });
+
+     socket.current.on("DB_ERROR", (message) => {
+        showErrorDialog(message);
+     });
+
+     return () => {
+        socket.current.off("CODE_INSERT");
+        socket.current.off("CODE_REPLACE");
+        socket.current.off("CODE_DELETE");
+        socket.current.off("CURSOR_CHANGED");
+        socket.current.off("SELECTION_CHANGED");
+        socket.current.off("CODE_CHANGED");
+        socket.current.off("COLOR_CHANGED");
+        socket.current.off("OUTPUT_CHANGED");
+        socket.current.off("connect_error");
+        socket.current.off("connect");
+        socket.current.off("ROOM:CONNECTION");
+        socket.current.off("ROOM:DISCONNECT");
+        socket.current.off("CHANGE_LANGUAGE");
+        socket.current.off("CHANGE_VERSION");
+        socket.current.off("COMPILE_STATE_CHANGED");
+        socket.current.off("ALL_USERS");
+        socket.current.off("ROOM:CONNECTION_MEDIA");
+        socket.current.off("RECEIVE_RETURN_SIGNAL");
+        socket.current.off("ROOM:DISCONNECTION_MEDIA");
+        socket.current.off("SOMEONE_TOGGLE_MICROPHONE");
+        socket.current.off("SOMEONE_TOGGLE_CAMERA");
+        socket.current.off("CHAT_MESSAGE");
+        socket.current.off("LOAD_ROOM_MESSAGES");
+        socket.current.off("LISTEN_TO_SPEAKER");
+        socket.current.off("DB_ERROR");
+     };
   }, []);
 
   useEffect(() => {
-    const initialMicState = location.state?.micState ?? true
-    const initialCamState = location.state?.camState ?? true
+     const initialMicState = location.state?.micState ?? true;
+     const initialCamState = location.state?.camState ?? true;
 
-    initUserMedia(initialMicState, initialCamState)
-  }, [])
-
-  useEffect(() => {
-    scrollMessageListToBottom()
-  }, [messageList])
+     initUserMedia(initialMicState, initialCamState);
+  }, []);
 
   useEffect(() => {
-    return () => {
-      if (localStream.current) {
-        localStream.current.getTracks().forEach(track => {
-          if (track.readyState === "live") {
-            track.stop();
-          }
-        })
-      }
-      userVideo.current = null
-      localStream.current = null
-    }
-  }, [])
+     scrollMessageListToBottom();
+  }, [messageList]);
+
+  useEffect(() => {
+     return () => {
+        if (localStream.current) {
+           localStream.current.getTracks().forEach((track) => {
+              if (track.readyState === "live") {
+                 track.stop();
+              }
+           });
+        }
+        userVideo.current = null;
+        localStream.current = null;
+     };
+  }, []);
 
   function initUserMedia(initMicState, initCamState) {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-      userVideo.current.srcObject = stream
-      localStream.current = stream
+     navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+           userVideo.current.srcObject = stream;
+           localStream.current = stream;
 
-      if (!initMicState) {
-        turnOnOffMicrophone()
-      }
+           if (!initMicState) {
+              turnOnOffMicrophone();
+           }
 
-      if (!initCamState) {
-        turnOnOffCamera()
-      }
+           if (!initCamState) {
+              turnOnOffCamera();
+           }
 
-      var speechEvent = hark(localStream.current, {})
+           var speechEvent = hark(localStream.current, {});
 
-      speechEvent.on('speaking', () => {
-        setSpeakingUsers(old => [...old, socket.current?.id])
-        socket.current.emit('LISTEN_TO_SPEAKER', { roomId, isSpeaking: true })
-      })
+           speechEvent.on("speaking", () => {
+              setSpeakingUsers((old) => [...old, socket.current?.id]);
+              socket.current.emit("LISTEN_TO_SPEAKER", { roomId, isSpeaking: true });
+           });
 
-      speechEvent.on('stopped_speaking', () => {
-        setSpeakingUsers(speakingUsers.filter(id => id !== socket.current?.id))
-        socket.current.emit('LISTEN_TO_SPEAKER', { roomId, isSpeaking: false })
-      })
+           speechEvent.on("stopped_speaking", () => {
+              setSpeakingUsers(speakingUsers.filter((id) => id !== socket.current?.id));
+              socket.current.emit("LISTEN_TO_SPEAKER", { roomId, isSpeaking: false });
+           });
 
-      socket.current.emit('CONNECTED_TO_ROOM_MEDIA', { roomId })
-      socket.current.on('ALL_USERS', (users) => {
-        const temptPeers = []
-        users.forEach(user => {
-          const peer = createPeer(user.id, socket.current?.id, localStream.current)
-          peersRef.current.push({
-            peerId: user?.id,
-            peer,
-            micState: user.micState,
-            camState: user.camState,
-          })
-          temptPeers.push({ peer, micState: user.micState, camState: user.camState })
+           socket.current.emit("CONNECTED_TO_ROOM_MEDIA", { roomId });
+           socket.current.on("ALL_USERS", (users) => {
+              const temptPeers = [];
+              users.forEach((user) => {
+                 const peer = createPeer(user.id, socket.current?.id, localStream.current);
+                 peersRef.current.push({
+                    peerId: user?.id,
+                    peer,
+                    micState: user.micState,
+                    camState: user.camState,
+                 });
+                 temptPeers.push({ peer, micState: user.micState, camState: user.camState });
+              });
+              setPeers(temptPeers);
+           });
+
+           socket.current.on("ROOM:CONNECTION_MEDIA", ({ signal, callerID }) => {
+              const peer = addPeer(signal, callerID, localStream.current);
+              setPeers((users) => [...users, { peer, micState: true, camState: true }]);
+              peersRef.current.push({
+                 peerId: callerID,
+                 peer,
+                 micState: true,
+                 camState: true,
+              });
+           });
+
+           socket.current.on("RECEIVE_RETURN_SIGNAL", ({ signal, id }) => {
+              const item = peersRef.current.find((p) => p.peerId === id);
+              item.peer.signal(signal);
+           });
+
+           socket.current.on("ROOM:DISCONNECTION_MEDIA", (userId) => {
+              var removePeer = peersRef.current.find((p) => p.peerId === userId);
+              console.log("🚀 ~ file: index.js:461 ~ socket.current.on ~ removePeer:", removePeer);
+              if (removePeer) {
+                 removePeer.peer.destroy();
+              }
+              var remainPeers = peersRef.current.filter((item) => item.peerId !== userId);
+              peersRef.current = remainPeers;
+              setPeers(remainPeers.map((item) => item.peer));
+
+              var remainStreams = peerStreamsRef.current.filter((s) => s.peerId !== userId);
+              peerStreamsRef.current = remainStreams;
+              setPeerStreams(remainStreams.map((i) => i.stream));
+           });
+
+           socket.current.on("SOMEONE_TOGGLE_MICROPHONE", ({ userId, micState }) => {
+              var peerIndex = peersRef.current.findIndex((p) => p.peerId === userId);
+
+              var newList = peersRef.current.map((p, index) => {
+                 if (index === peerIndex) {
+                    p.micState = micState;
+                 }
+                 return { peer: p.peer, micState: p.micState, camState: p.camState };
+              });
+              setPeers(newList);
+           });
+
+           socket.current.on("SOMEONE_TOGGLE_CAMERA", ({ userId, camState }) => {
+              var peerIndex = peersRef.current.findIndex((p) => p.peerId === userId);
+
+              var newList = peersRef.current.map((p, index) => {
+                 if (index === peerIndex) {
+                    p.camState = camState;
+                 }
+                 return { peer: p.peer, micState: p.micState, camState: p.camState };
+              });
+              setPeers(newList);
+           });
+        })
+        .catch((err) => {
+           console.log(err);
+           showErrorDialog("Can't start your webcam. Please reload your browser");
         });
-        setPeers(temptPeers)
-      })
-
-      socket.current.on('ROOM:CONNECTION_MEDIA', ({ signal, callerID }) => {
-        const peer = addPeer(signal, callerID, localStream.current)
-        setPeers(users => [...users, { peer, micState: true, camState: true }])
-        peersRef.current.push({
-          peerId: callerID,
-          peer,
-          micState: true,
-          camState: true
-        })
-      })
-
-      socket.current.on('RECEIVE_RETURN_SIGNAL', ({ signal, id }) => {
-        const item = peersRef.current.find(p => p.peerId === id)
-        item.peer.signal(signal)
-      })
-
-      socket.current.on('ROOM:DISCONNECTION_MEDIA', (userId) => {
-        var removePeer = peersRef.current.find(p => p.peerId === userId)
-        console.log("🚀 ~ file: index.js:461 ~ socket.current.on ~ removePeer:", removePeer)
-        if (removePeer) {
-          removePeer.peer.destroy()
-        }
-        var remainPeers = peersRef.current.filter(item => item.peerId !== userId)
-        peersRef.current = remainPeers
-        setPeers(remainPeers.map(item => item.peer))
-
-        var remainStreams = peerStreamsRef.current.filter(s => s.peerId !== userId)
-        peerStreamsRef.current = remainStreams
-        setPeerStreams(remainStreams.map(i => i.stream))
-      })
-
-      socket.current.on('SOMEONE_TOGGLE_MICROPHONE', ({ userId, micState }) => {
-        var peerIndex = peersRef.current.findIndex(p => p.peerId === userId)
-
-        var newList = peersRef.current.map((p, index) => {
-          if (index === peerIndex) {
-            p.micState = micState
-          }
-          return { peer: p.peer, micState: p.micState, camState: p.camState }
-        })
-        setPeers(newList)
-      })
-
-      socket.current.on('SOMEONE_TOGGLE_CAMERA', ({ userId, camState }) => {
-        var peerIndex = peersRef.current.findIndex(p => p.peerId === userId)
-
-        var newList = peersRef.current.map((p, index) => {
-          if (index === peerIndex) {
-            p.camState = camState
-          }
-          return { peer: p.peer, micState: p.micState, camState: p.camState }
-        })
-        setPeers(newList)
-      })
-    }).catch(err => {
-      console.log(err)
-      showErrorDialog('Can\'t start your webcam. Please reload your browser')
-    })
   }
 
   function sendChatMessage() {
-    if (inputRef.current.value === '') return
-    const sendDate = Date()
+     if (inputRef.current.value === "") return;
+     const sendDate = Date();
 
-    addMessage(username, inputRef.current.value, sendDate, true)
-    socket.current.emit('CHAT_MESSAGE', {
-      'username': username,
-      roomId,
-      'message': inputRef.current.value,
-      'date': sendDate,
-    })
-    inputRef.current.value = ''
+     addMessage(username, inputRef.current.value, sendDate, true);
+     socket.current.emit("CHAT_MESSAGE", {
+        username: username,
+        roomId,
+        message: inputRef.current.value,
+        date: sendDate,
+     });
+     inputRef.current.value = "";
   }
 
   function createPeer(userToSignal, callerID, stream) {
-    const peer = new SimplePeer({
-      initiator: true,
-      trickle: false,
-      stream,
-      config: configuration
-    })
+     const peer = new SimplePeer({
+        initiator: true,
+        trickle: false,
+        stream,
+        config: configuration,
+     });
 
-    peer.on('signal', signal => {
-      socket.current.emit('SIGNAL_SENT', { userToSignal, callerID, signal })
-    })
+     peer.on("signal", (signal) => {
+        socket.current.emit("SIGNAL_SENT", { userToSignal, callerID, signal });
+     });
 
-    peer.on('stream', stream => {
-      peerStreamsRef.current.push({
-        peerId: userToSignal
-        , stream
-      })
-      setPeerStreams(old => [...old, stream])
-    })
+     peer.on("stream", (stream) => {
+        peerStreamsRef.current.push({
+           peerId: userToSignal,
+           stream,
+        });
+        setPeerStreams((old) => [...old, stream]);
+     });
 
-    peer.on('track', (track, stream) => {
-      if (track.kind === 'audio') {
-        track.addEventListener('mute', (event) => {
-          console.log('event mute')
-        })
+     peer.on("track", (track, stream) => {
+        if (track.kind === "audio") {
+           track.addEventListener("mute", (event) => {
+              console.log("event mute");
+           });
 
-        track.addEventListener('unmute', (event) => {
-          console.log('event unmute')
-        })
-      }
-    })
+           track.addEventListener("unmute", (event) => {
+              console.log("event unmute");
+           });
+        }
+     });
 
-    return peer
+     return peer;
   }
 
   function addPeer(incomingSignal, callerID, stream) {
-    const peer = new SimplePeer({
-      initiator: false,
-      trickle: false,
-      stream,
-      config: configuration
-    })
+     const peer = new SimplePeer({
+        initiator: false,
+        trickle: false,
+        stream,
+        config: configuration,
+     });
 
-    peer.on('signal', signal => {
-      socket.current.emit('SIGNAL_RETURN', { signal, callerID })
-    })
+     peer.on("signal", (signal) => {
+        socket.current.emit("SIGNAL_RETURN", { signal, callerID });
+     });
 
-    peer.on('stream', stream => {
-      peerStreamsRef.current.push({ peerId: callerID, stream })
-      setPeerStreams(old => [...old, stream])
-    })
+     peer.on("stream", (stream) => {
+        peerStreamsRef.current.push({ peerId: callerID, stream });
+        setPeerStreams((old) => [...old, stream]);
+     });
 
-    peer.on('track', (track, stream) => {
-      console.log(track)
-    })
+     peer.on("track", (track, stream) => {
+        console.log(track);
+     });
 
-    peer.on('error', (error, stream) => {
-      console.log('errorrr:::', error)
-    })
+     peer.on("error", (error, stream) => {
+        console.log("errorrr:::", error);
+     });
 
-
-    peer.signal(incomingSignal)
-    return peer
+     peer.signal(incomingSignal);
+     return peer;
   }
 
   function removeUserCursor(oldUserId) {
-    if (remoteCursorManager && remoteSelectionManager) {
-      remoteCursorManager.removeCursor(oldUserId);
-      remoteSelectionManager.removeSelection(oldUserId);
-    }
+     if (remoteCursorManager && remoteSelectionManager) {
+        remoteCursorManager.removeCursor(oldUserId);
+        remoteSelectionManager.removeSelection(oldUserId);
+     }
   }
 
   function addUserCursor(newUserId, cursorColor) {
-    const users = usersRef.current;
-    if (remoteCursorManager && remoteSelectionManager) {
-      const newUserIndex = users.findIndex((item) => item.id === newUserId);
-      const newUser = users[newUserIndex];
+     const users = usersRef.current;
+     if (remoteCursorManager && remoteSelectionManager) {
+        const newUserIndex = users.findIndex((item) => item.id === newUserId);
+        const newUser = users[newUserIndex];
 
-      if (newUserId !== socket.current.id) {
-        remoteCursorManager.addCursor(
-          newUser.id,
-          cursorColor,
-          newUser.username
-        );
-        remoteSelectionManager.addSelection(
-          newUser.id,
-          cursorColor,
-          newUser.username
-        );
-      }
-    }
+        if (newUserId !== socket.current.id) {
+           remoteCursorManager.addCursor(newUser.id, cursorColor, newUser.username);
+           remoteSelectionManager.addSelection(newUser.id, cursorColor, newUser.username);
+        }
+     }
   }
-
 
   // if (!username) return <Navigate to="/" replace />;
 
-
-
   function addInitialCursors(userColors) {
-    const users = usersRef.current;
+     const users = usersRef.current;
 
-    for (let i in users) {
-      let user = users[users.length - i - 1];
+     for (let i in users) {
+        let user = users[users.length - i - 1];
 
-      if (user.id !== socket.current?.id) {
-        const cursorColor = userColors[user.id]
-        remoteCursorManager.addCursor(user.id, cursorColor, user.username);
-        remoteSelectionManager.addSelection(
-          user.id,
-          cursorColor,
-          user.username
-        );
-      }
-    }
+        if (user.id !== socket.current?.id) {
+           const cursorColor = userColors[user.id];
+           remoteCursorManager.addCursor(user.id, cursorColor, user.username);
+           remoteSelectionManager.addSelection(user.id, cursorColor, user.username);
+        }
+     }
   }
 
   function handleOnMount(editor, monaco) {
+     editorRef.current = editor;
+     monacoRef.current = monaco;
 
-    editorRef.current = editor;
-    monacoRef.current = monaco;
+     if (compilerLanguages.current) {
+        changeEditorLanguage(compilerLanguages.current[selectedLanguageIndex]?.languageCode);
+     }
 
-    if (compilerLanguages.current) {
-      changeEditorLanguage(compilerLanguages.current[selectedLanguageIndex].languageCode);
-    }
+     remoteCursorManager = new RemoteCursorManager({
+        editor: editor,
+        tooltips: true,
+        tooltipDuration: 1,
+        showTooltipOnHover: true,
+     });
 
-    remoteCursorManager = new RemoteCursorManager({
-      editor: editor,
-      tooltips: true,
-      tooltipDuration: 1,
-      showTooltipOnHover: true,
-    });
+     remoteSelectionManager = new RemoteSelectionManager({ editor: editor });
 
-    remoteSelectionManager = new RemoteSelectionManager({ editor: editor });
+     contentManager = new EditorContentManager({
+        editor: editor,
+        onInsert(index, text) {
+           const data = { index: index, text: text };
+           socket.current?.emit("CODE_INSERT", { roomId, data });
+        },
+        onReplace(index, length, text) {
+           const data = { index: index, length: length, text: text };
+           if (isSetInitial) {
+              return;
+           }
+           socket.current?.emit("CODE_REPLACE", { roomId, data });
+        },
+        onDelete(index, length) {
+           const data = { index: index, length: length };
+           socket.current?.emit("CODE_DELETE", { roomId, data });
+        },
+     });
 
-    contentManager = new EditorContentManager({
-      editor: editor,
-      onInsert(index, text) {
-        const data = { index: index, text: text };
-        socket.current?.emit("CODE_INSERT", { roomId, data });
-      },
-      onReplace(index, length, text) {
-        const data = { index: index, length: length, text: text };
-        if (isSetInitial) { return }
-        socket.current?.emit("CODE_REPLACE", { roomId, data });
-      },
-      onDelete(index, length) {
-        const data = { index: index, length: length };
-        socket.current?.emit("CODE_DELETE", { roomId, data });
-      },
-    });
+     editor.onDidChangeCursorPosition((e) => {
+        const offset = editor.getModel().getOffsetAt(e.position);
+        const cursorData = { name: socket.current.id, offset: offset };
 
-    editor.onDidChangeCursorPosition((e) => {
-      const offset = editor.getModel().getOffsetAt(e.position);
-      const cursorData = { name: socket.current.id, offset: offset };
+        socket.current?.emit("CURSOR_CHANGED", { roomId, cursorData });
+     });
 
-      socket.current?.emit("CURSOR_CHANGED", { roomId, cursorData });
-    });
+     editor.onDidChangeCursorSelection((e) => {
+        const startOffset = editor.getModel().getOffsetAt(e.selection.getStartPosition());
+        const endOffset = editor.getModel().getOffsetAt(e.selection.getEndPosition());
+        const selectionData = {
+           name: socket.current.id,
+           startOffset: startOffset,
+           endOffset: endOffset,
+        };
 
-    editor.onDidChangeCursorSelection((e) => {
-      const startOffset = editor
-        .getModel()
-        .getOffsetAt(e.selection.getStartPosition());
-      const endOffset = editor
-        .getModel()
-        .getOffsetAt(e.selection.getEndPosition());
-      const selectionData = {
-        name: socket.current.id,
-        startOffset: startOffset,
-        endOffset: endOffset,
-      };
+        socket.current?.emit("SELECTION_CHANGED", { roomId, selectionData });
+     });
 
-      socket.current?.emit("SELECTION_CHANGED", { roomId, selectionData });
-    });
+     socket.current.emit("CONNECTED_TO_ROOM", { roomId, username });
 
-    socket.current.emit("CONNECTED_TO_ROOM", { roomId, username });
-
-    setDefaultCallingBarPosition()
+     setDefaultCallingBarPosition();
   }
 
   const handleOnchange = debounce((value) => {
@@ -763,7 +746,7 @@ function CodeScreen({ username }) {
         setSelectedVersionIndex(0);
         versionList.current = index !== -1 ? compilerLanguages.current[index].versions : []
       }
-      changeEditorLanguage(compilerLanguages.current[index].languageCode);
+      changeEditorLanguage(compilerLanguages.current[index]?.languageCode);
 
       socket.current?.emit('CHANGE_LANGUAGE', {
         'roomId': roomId,
