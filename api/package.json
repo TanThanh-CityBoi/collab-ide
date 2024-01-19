@@ -1,5 +1,5 @@
 {
-  "name": "collaborative-ide-backend",
+  "name": "collab-ide-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {

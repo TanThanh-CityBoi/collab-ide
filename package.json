@@ -1,9 +1,6 @@
 {
     "name": "collab-ide",
-    "private": true,
-    "engines": {
-        "node": "18.16.1"
-    },
+    "private": false,
     "scripts": {
         "start:all": "lerna run --parallel --stream start:dev",
         "build:all": "lerna run --parallel --stream build",
