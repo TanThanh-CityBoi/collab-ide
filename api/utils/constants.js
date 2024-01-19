@@ -26,7 +26,6 @@ const SOCKET_IO_EVENT = {
     LISTEN_TO_SPEAKER: 'LISTEN_TO_SPEAKER',
 }
 
-const FRONT_END_URL = process.env.FRONT_END_URL;
-const COMPILER_URL = "https://api.jdoodle.com/v1/execute"
+const COMPILER_URL = "https://api.jdoodle.com/v1/execute";
 
-module.exports = { REDIS_EVENT, SOCKET_IO_EVENT, FRONT_END_URL, COMPILER_URL }
+module.exports = { REDIS_EVENT, SOCKET_IO_EVENT, COMPILER_URL };

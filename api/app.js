@@ -5,20 +5,18 @@ const http = require('http')
 const { Server } = require('socket.io')
 const cors = require('cors')
 const { greenBright, redBright } = require('chalk')
-const { redisClient } = require('./database/redis_client')
-const { FRONT_END_URL } = require('./utils/constants')
-require('dotenv').config()
+const { redisClient } = require("./database/redis_client");
+require("dotenv").config();
 
-
-var indexRouter = require('./routes/index');
-var compilerRouter = require('./routes/compiler')
-var saveCodeRouter = require('./routes/save-data')
+var indexRouter = require("./routes/index");
+var compilerRouter = require("./routes/compiler");
+var saveCodeRouter = require("./routes/save-data");
 
 var app = express();
-const server = http.createServer(app)
+const server = http.createServer(app);
 const io = new Server(server, {
    cors: {
-      origin: [FRONT_END_URL, "http://localhost:3000"],
+      origin: [process.env.FRONT_END_URL, "http://localhost:3000"],
    },
 });
 
