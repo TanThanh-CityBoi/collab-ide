@@ -5,15 +5,15 @@ html {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Roboto Mono";
+  font-family: "Roboto";
 }
 
 h4,
 h3,
 h2 {
-  font-family: "Roboto Mono";
+  font-family: "Roboto";
   font-size: 1rem;
-  color: white;
+  color: #333333;
   margin-bottom: 12px;
 }
 
@@ -23,7 +23,7 @@ h4 {
 }
 
 strong {
-  color: rgb(247, 235, 3);
+  color: #5c5c5c;
 }
 
 .icon img {
@@ -43,8 +43,8 @@ textarea {
   resize: none;
   outline: none;
   border: none;
-  background-color: rgb(15, 15, 15);
-  color: white;
+  background-color: #fff;
+  color: #000;
   padding: 12px;
 }
 
@@ -55,16 +55,16 @@ input {
   background-color: transparent;
   border: 1px solid #333;
   outline: none;
-  color: white !important;
+  color: #000 !important;
   border-color: #333 !important;
 }
 
 div:has(> .input-name) {
-  border-bottom: 1px solid #c4c4c4
+  border-bottom: 1px solid #f2a9ff
 }
 
 div:has(> .input-name):hover {
-  border-bottom: 1px solid #fff
+  border-bottom: 0px !important
 }
 
 div:has(> .input-name).MuiInput-root::after{
@@ -97,12 +97,17 @@ div:has(> .input-name).Mui-error:hover {
 .active-result-banner {
   height: 100%;
   border: 1px solid #333;
-  color: white;
+  color: #000;
   padding: 12px;
   font-family: monospace;
   word-wrap: break-word;
   white-space: -moz-pre-wrap;
   white-space: pre-wrap;
+}
+
+.MuiAutocomplete-inputRoot {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
 
 #compiler-language-version,
@@ -112,30 +117,30 @@ div:has(> .input-name).Mui-error:hover {
 
 #compiler-language-version-label,
 #compiler-language-label {
-  color: #ccc;
+  color: #000;
   font-family: 'Roboto Mono' !important;
 }
 
 .MuiAutocomplete-input {
-  color: white !important;
+  color: #000 !important;
 }
 
 svg {
-  fill: #ccc !important;
+  fill: #a5a5a5 !important;
 }
 
 
 .MuiOutlinedInput-notchedOutline {
-  border-color: #ccc !important;
+  border-color: #000 !important;
 }
 
 .alert-dialog {
-  background-color: #151515 !important;
+  background-color: #fff !important;
   padding: 4px 4px 8px 4px;
 }
 
 #alert-dialog-title {
-  color: #fff
+  color: #000
 }
 
 #alert-dialog-description {
@@ -162,7 +167,7 @@ svg {
 
 .rce-container-input {
   align-items: center;
-  background: #fff;
+  background: #000;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -176,13 +181,13 @@ svg {
 
 .rce-mbox {
   min-width: unset !important;
-  background: #302c2c !important;
-  color: white;
+  background: #c5c5c5 !important;
+  color: #333;
 }
 
 .rce-mbox.rce-mbox-right {
-  background: #740088 !important;
-  color: white;
+  background: #da62f0 !important;
+  color: #fff;
 }
 
 .rce-container-mbox {
@@ -231,11 +236,11 @@ button.MuiButton-containedPrimary:hover {
 }
 
 button.MuiButton-outlinedPrimary:hover {
-  border: solid 1px #FFF !important;
+  border: solid 1px #000 !important;
 }
 
 .cancel-button {
-  color: rgba(256,256, 256, 0.26) !important;
+  color: #333333 !important;
   border-radius: 4px !important;
 }
 

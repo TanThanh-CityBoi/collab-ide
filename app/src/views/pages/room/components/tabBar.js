@@ -58,23 +58,40 @@ export default function BasicTabs({ tabIndexRef, components, labels, dotState, s
     }, [tabIndex])
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: '#2e2e2e' }}>
-                <Tabs value={tabIndex} color={'#fff'} onChange={handleChange} aria-label="basic tabs example" centered TabIndicatorProps={{
-                    style: {
-                        backgroundColor: "#fff"
-                    }
-                }}>
-                    {labels.map((item, index) => {
-                        var icon = index === 1 ? <Badge invisible={dotState} variant='dot' color='info'> {icons[index]} </Badge> : icons[index]
+       <Box sx={{ width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "#f2a9ff" }}>
+             <Tabs
+                value={tabIndex}
+                color={"#fff"}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+                centered
+                TabIndicatorProps={{
+                   style: {
+                      backgroundColor: "#fff",
+                   },
+                }}
+             >
+                {labels.map((item, index) => {
+                   var icon =
+                      index === 1 ? (
+                         <Badge invisible={dotState} variant="dot" color="info">
+                            {" "}
+                            {icons[index]}{" "}
+                         </Badge>
+                      ) : (
+                         icons[index]
+                      );
 
-                        return <Tab sx={{ width: '50%' }} icon={icon} key={index} {...a11yProps(index)} />
-                    })}
-                </Tabs>
-            </Box>
-            {components.map((item, index) => {
-                return <TabPanel children={item} value={tabIndex} index={index} key={index} />
-            })}
-        </Box>
+                   return (
+                      <Tab sx={{ width: "50%" }} icon={icon} key={index} {...a11yProps(index)} />
+                   );
+                })}
+             </Tabs>
+          </Box>
+          {components.map((item, index) => {
+             return <TabPanel children={item} value={tabIndex} index={index} key={index} />;
+          })}
+       </Box>
     );
 }

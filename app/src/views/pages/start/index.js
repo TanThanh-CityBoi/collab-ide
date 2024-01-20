@@ -1,165 +1,64 @@
-import { Button, Grid, IconButton, Box } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SelectRoomDialog from "./components/select_room_dialog";
-import CodeRoundedIcon from '@mui/icons-material/CodeRounded';
-import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
-import Carousel from "nuka-carousel";
-import VideoChatRoundedIcon from '@mui/icons-material/VideoChatRounded';
-import logo from '../../../assets/collab-icon.png';
-import { KeyboardArrowLeftRounded, KeyboardArrowRightRounded } from "@mui/icons-material";
-
+import logo from "../../../assets/icon.png";
 
 function StartScreen() {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+   const [open, setOpen] = useState(false);
+   const navigate = useNavigate();
 
-  return (
-    <Grid container
-      sx={{
-        height: "100vh",
-        display: "flex",
-      }}>
-      <Grid 
-        sx={{ 
-          background: "#151515",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          lineHeight: 1.6,
-          color: "#cccccc",
-          overflow: "hidden !important",
-          width: "100%",
-          padding: "36px 0px 36px 0px",
-        }} 
-        item md={7}>
-          <Carousel
+   return (
+      <Box
+         sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "36px",
+         }}
+      >
+         <img
+            src={logo}
+            alt="logo"
             style={{
-              width: "56vw",
+               width: "25%",
+               marginBottom: "30px",
             }}
-            adaptiveHeight={true}
-            renderCenterLeftControls={({ previousDisabled, previousSlide }) => (
-              <IconButton sx={{ left: "1%" }} onClick={previousSlide} disabled={previousDisabled}>
-                <KeyboardArrowLeftRounded />
-              </IconButton>
-            )}
-            renderCenterRightControls={({ nextDisabled, nextSlide }) => (
-              <IconButton sx={{ right: "1%" }} onClick={nextSlide} disabled={nextDisabled}>
-                <KeyboardArrowRightRounded />
-              </IconButton>
-            )}
-            slidesToShow={1}
-            scrollMode="reminder">
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-              }}>
-                <CodeRoundedIcon sx={{
-                  fontSize: "140px"
-                }}/>
-                <Box sx={{
-                  width: "45vw",
-                }}>
-                  This is an online code editor that allows you to write, compile and execute your code online in many programming languages...
-                </Box>
-              </div>
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-              }}>
-                <Groups2RoundedIcon sx={{
-                  fontSize: "140px"
-                }}/>
-                <Box sx={{
-                  width: "45vw",
-                }}>
-                  ...collaboratively with your teammates, and colleagues.
-                </Box>
-              </div>
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-              }}>
-                <VideoChatRoundedIcon sx={{
-                  fontSize: "140px"
-                }}/>
-                <Box sx={{
-                  width: "45vw",
-                }}>
-                  When coding together, you and your teammates can also communicate with each other via messaging and video calling.
-                </Box>
-              </div>
-          </Carousel>
-      </Grid>
-      <Grid 
-        sx={{ 
-          background: "#111111",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "start",
-          alignItems: "end",
-          width: "100%",
-          color: "#fff",
-        }}
-        item md={5}>
-        <Box sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-          width: "100%",
-          paddingBottom: "36px",
-        }}>
-          <img src={logo} alt="logo" style={{
-            width: "20%",
-            marginBottom: "18px",
-          }}/>
-          <Button
+         />
+         <h1> Online Compiler IDE</h1>
+         <Button
             sx={{
-              marginTop: "18px",
-              minWidth: "200px",
-              fontFamily: "Roboto Mono",
-              backgroundColor: "#d800ff"
+               marginTop: "18px",
+               minWidth: "200px",
+               fontFamily: "Roboto Mono",
+               backgroundColor: "#d800ff",
             }}
             variant="contained"
             onClick={() => {
-              navigate(`inputName`, {
-                state: { 'isCreateRoom': true }
-              })
+               navigate(`inputName`, {
+                  state: { isCreateRoom: true },
+               });
             }}
-          >
-            Create room
-          </Button>
-          <Button
+         >
+            New Room
+         </Button>
+         <Button
             sx={{
-              marginTop: "12px",
-              minWidth: "200px",
-              fontFamily: "Roboto Mono",
-              color: "#d800ff",
-              backgroundColor: "#ffffff",
+               marginTop: "12px",
+               minWidth: "200px",
+               fontFamily: "Roboto Mono",
+               color: "#d800ff",
+               backgroundColor: "#ffffff",
             }}
             variant="outlined"
             onClick={() => setOpen(true)}
-          >
+         >
             Join room
-          </Button>
-          <SelectRoomDialog open={open} handleClose={() => setOpen(false)} />
-        </Box>
-      </Grid>
-    </Grid>
-  );
+         </Button>
+         <SelectRoomDialog open={open} handleClose={() => setOpen(false)} />
+      </Box>
+   );
 }
 
 export default StartScreen;

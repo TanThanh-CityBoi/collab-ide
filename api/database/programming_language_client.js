@@ -1,142 +1,140 @@
 const { Version, ProgrammingLanguage } = require('../models/programming_language')
 
 const copyRight = `/*
-* Collaborative online editor
-* Write, Edit and Run code with your team.
+*   Online compiler IDE
+*   Write, Edit and Run code with your team.
 */
 
 `;
 
 const copyRightForPython = `"""
- Collaborative online editor
- Write, Edit and Run code with your team.
+    Online compiler IDE
+    Write, Edit and Run code with your team.
 """
 
-`
-
+`;
 
 class TemplateClient {
-    _createTemplate(helloWorldProgram, isPython = false) {
-        if (isPython) return copyRightForPython + helloWorldProgram
-        return copyRight + helloWorldProgram
-    }
+   _createTemplate(helloWorldProgram, isPython = false) {
+      if (isPython) return copyRightForPython + helloWorldProgram;
+      return copyRight + helloWorldProgram;
+   }
 
-    getTemplate(languageCode) {
-        if (languageCode in this.templates)
-            return this.templates[languageCode]
-        return null
-    }
+   getTemplate(languageCode) {
+      if (languageCode in this.templates) return this.templates[languageCode];
+      return null;
+   }
 
-    templates =
-        {
-            'java': this._createTemplate(
-                `
+   templates = {
+      java: this._createTemplate(
+         `
 public class HelloWorld {
     public static void main(String[] args) {
-        System.out.println("Hello World with Java!"); 
+        System.out.println("Welcome to Programiz!"); 
     }
 }
                 `
-            ),
-            'c': this._createTemplate(
-                `
+      ),
+      c: this._createTemplate(
+         `
 #include<stdio.h>
 
 int main() {
-    printf("Hello World with C!");
+    printf("Welcome to Programiz!");
     return 0;
 }
                 `
-            ),
-            'cpp': this._createTemplate(
-                `
+      ),
+      cpp: this._createTemplate(
+         `
 #include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello World with C++!";
+    cout << "Welcome to Programiz!";
     return 0;
 }
                 `
-            ),
-            'cpp14': this._createTemplate(
-                `
+      ),
+      cpp14: this._createTemplate(
+         `
 #include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello World with C++!";
+    cout << "Welcome to Programiz!";
 }`
-            ),
-            'cpp17': this._createTemplate(
-                `
+      ),
+      cpp17: this._createTemplate(
+         `
 #include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello World with C++!";
+    cout << "Welcome to Programiz!";
 }`
-            ),
-            'python2': this._createTemplate(
-                `
-print('Hello World with Python!')
-                `
-                , true),
-            'python3': this._createTemplate(
-                `
-print('Hello World with Python!')
-                `
-                , true),
-            'go': this._createTemplate(
-                `
+      ),
+      python2: this._createTemplate(
+         `
+print('Welcome to Programiz!')
+                `,
+         true
+      ),
+      python3: this._createTemplate(
+         `
+print('Welcome to Programiz!')
+                `,
+         true
+      ),
+      go: this._createTemplate(
+         `
 package main
 
 import "fmt"
 
 func main() {
-    fmt.Println("Hello World with Golang!")
+    fmt.Println("Welcome to Programiz!")
 }
                 `
-            ),
-            'csharp': this._createTemplate(
-                `
+      ),
+      csharp: this._createTemplate(
+         `
 using System;
 
 namespace HelloWorld {
     class Program {
         static void Main(string[] args) {
-            Console.WriteLine("Hello World with C#!");
+            Console.WriteLine("Welcome to Programiz!");
         }
     }
 }
                 `
-            ),
-            'swift': this._createTemplate(
+      ),
+      swift: this._createTemplate(
+         `
+print("Welcome to Programiz!") 
                 `
-print("Hello World with Swift!") 
-                `
-            ),
-            'dart': this._createTemplate(
-                `
+      ),
+      dart: this._createTemplate(
+         `
 void main() {
-    print("Hello World with Dart!");
+    print("Welcome to Programiz!");
 }
                 `
-            ),
-            'nodejs': this._createTemplate(
+      ),
+      nodejs: this._createTemplate(
+         `
+console.log('Welcome to Programiz!')
                 `
-console.log('Hello World with NodeJs!')
-                `
-            ),
-            'kotlin': this._createTemplate(
-                `
+      ),
+      kotlin: this._createTemplate(
+         `
 fun main(args : Array<String>) {
-    println("Hello World with Kotlin!")
+    println("Welcome to Programiz!")
 }
                 `
-            ),
-        }
-
+      ),
+   };
 }
 
 class PLClient {
